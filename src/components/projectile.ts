@@ -40,6 +40,15 @@ class Projectile extends Graphics {
       alpha: 1,
     });
   }
+
+  update() {
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+    this.draw();
+  }
+  delete() {
+    this.clear();
+  }
 }
 
 export { Projectile };
