@@ -1,6 +1,6 @@
 import { Application, Graphics } from "pixi.js";
 
-interface ProjectileI {
+interface EnemyI {
   app: Application;
   posX: number;
   posY: number;
@@ -12,7 +12,7 @@ interface ProjectileI {
   };
 }
 
-class Projectile extends Graphics {
+class Enemy extends Graphics {
   app: Application;
   posX: number;
   posY: number;
@@ -23,7 +23,7 @@ class Projectile extends Graphics {
     y: number;
   };
 
-  constructor(options: ProjectileI) {
+  constructor(options: EnemyI) {
     super();
     this.app = options.app;
     this.posX = options.posX;
@@ -52,4 +52,4 @@ class Projectile extends Graphics {
   }
 }
 
-export { Projectile };
+export { Enemy };
