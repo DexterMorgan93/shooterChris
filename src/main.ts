@@ -1,4 +1,4 @@
-import { Application } from "pixi.js";
+import { AlphaFilter, Application, BlurFilter } from "pixi.js";
 import { Player } from "./components/player";
 import { Projectile } from "./components/projectile";
 import { Enemy } from "./components/enemy";
@@ -12,7 +12,7 @@ import { Enemy } from "./components/enemy";
   app.stage.eventMode = "static";
   app.stage.hitArea = app.screen;
 
-  const player = new Player({ app, radius: 30, color: "0xff0000" });
+  const player = new Player({ app, radius: 10, color: "0xffffff" });
   player.position.set(app.canvas.width / 2, app.canvas.height / 2);
   app.stage.addChild(player);
 
@@ -31,7 +31,8 @@ import { Enemy } from "./components/enemy";
         x = Math.random() * app.canvas.width;
         y = Math.random() < 0.5 ? 0 - radius : app.canvas.height + radius;
       }
-      const color = "rgb(255, 160, 122)";
+      const color = `hsl(${Math.random() * 360},50%,50%)`;
+
       const angle = Math.atan2(
         app.canvas.height / 2 - y,
         app.canvas.width / 2 - x
@@ -114,14 +115,14 @@ import { Enemy } from "./components/enemy";
       event.globalX - app.canvas.width / 2
     );
     const velocity = {
-      x: Math.cos(angle),
-      y: Math.sin(angle),
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5,
     };
 
     const projectile = new Projectile({
       app: app,
       radius: 9,
-      color: "0xea98f4",
+      color: "0xffffff",
       velocity: velocity,
     });
     projectile.pivot.set(0.5, 0.5);
