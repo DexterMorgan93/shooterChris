@@ -40,19 +40,16 @@ import { Enemy } from "./components/enemy";
         y: Math.sin(angle),
       };
 
-      enemies.push(
-        new Enemy({
-          app: app,
-          posX: x,
-          posY: y,
-          radius: radius,
-          color: color,
-          velocity: velocity,
-        })
-      );
-      enemies.forEach((item) => {
-        app.stage.addChild(item);
+      const enemy = new Enemy({
+        app: app,
+        radius: radius,
+        color: color,
+        velocity: velocity,
       });
+      enemy.pivot.set(0.5, 0.5);
+      enemy.position.set(x, y);
+
+      enemies.push(enemy);
     }, 1000);
   }
 
@@ -66,29 +63,45 @@ import { Enemy } from "./components/enemy";
       y: Math.sin(angle),
     };
 
-    projectiles.push(
-      new Projectile({
-        app: app,
-        posX: app.canvas.width / 2,
-        posY: app.canvas.height / 2,
-        radius: 9,
-        color: "0xea98f4",
-        velocity: velocity,
-      })
-    );
+    const projectile = new Projectile({
+      app: app,
+      radius: 9,
+      color: "0xea98f4",
+      velocity: velocity,
+    });
+    projectile.pivot.set(0.5, 0.5);
+    projectile.position.set(app.canvas.width / 2, app.canvas.height / 2);
+    projectiles.push(projectile);
   });
 
   app.ticker.add(() => {
     projectiles.forEach((projectile) => {
+      app.stage.addChild(projectile);
       projectile.update();
       // if (projectile.position.x > app.canvas.height / 2) {
       //   projectile.delete();
       // }
-
-      app.stage.addChild(projectile);
     });
-    enemies.forEach((item) => {
+    enemies.forEach((item, itemIndex) => {
+      app.stage.addChild(item);
       item.update();
+
+      projectiles.forEach((proj, projIndex) => {
+        const distance = Math.hypot(proj.x - item.x, proj.y - item.y);
+        // console.log("item.x", item.x);
+        // console.log("proj.x", proj.x);
+        console.log("distance", distance);
+
+        if (distance - item.radius - proj.radius < 0) {
+          // Удаляем объект с `stage`
+          app.stage.removeChild(item);
+          app.stage.removeChild(proj);
+
+          // Удаляем объект из массива
+          enemies.splice(itemIndex, 1);
+          projectiles.splice(projIndex, 1);
+        }
+      });
     });
   });
 
