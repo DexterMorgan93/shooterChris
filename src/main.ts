@@ -1,4 +1,4 @@
-import { Application, Graphics } from "pixi.js";
+import { Application } from "pixi.js";
 import { Player } from "./components/player";
 import { Projectile } from "./components/projectile";
 import { Enemy } from "./components/enemy";
@@ -13,44 +13,45 @@ import { Enemy } from "./components/enemy";
   app.stage.hitArea = app.screen;
 
   const player = new Player({ app, radius: 30, color: "0xff0000" });
+  player.position.set(app.canvas.width / 2, app.canvas.height / 2);
   app.stage.addChild(player);
 
   const projectiles: Projectile[] = [];
   const enemies: Enemy[] = [];
 
   function spawnEnemies() {
-    setInterval(() => {
-      const radius = Math.random() * (30 - 4) + 4;
-      let x;
-      let y;
-      if (Math.random() < 0.5) {
-        x = Math.random() < 0.5 ? 0 - radius : app.canvas.width + radius;
-        y = Math.random() * app.canvas.height;
-      } else {
-        x = Math.random() * app.canvas.width;
-        y = Math.random() < 0.5 ? 0 - radius : app.canvas.height + radius;
-      }
-      const color = "rgb(255, 160, 122)";
-      const angle = Math.atan2(
-        app.canvas.height / 2 - y,
-        app.canvas.width / 2 - x
-      );
-      const velocity = {
-        x: Math.cos(angle),
-        y: Math.sin(angle),
-      };
+    // setInterval(() => {
+    const radius = Math.random() * (30 - 4) + 4;
+    let x;
+    let y;
+    if (Math.random() < 0.5) {
+      x = Math.random() < 0.5 ? 0 - radius : app.canvas.width + radius;
+      y = Math.random() * app.canvas.height;
+    } else {
+      x = Math.random() * app.canvas.width;
+      y = Math.random() < 0.5 ? 0 - radius : app.canvas.height + radius;
+    }
+    const color = "rgb(255, 160, 122)";
+    const angle = Math.atan2(
+      app.canvas.height / 2 - y,
+      app.canvas.width / 2 - x
+    );
+    const velocity = {
+      x: Math.cos(angle),
+      y: Math.sin(angle),
+    };
 
-      const enemy = new Enemy({
-        app: app,
-        radius: radius,
-        color: color,
-        velocity: velocity,
-      });
-      enemy.pivot.set(0.5, 0.5);
-      enemy.position.set(x, y);
+    const enemy = new Enemy({
+      app: app,
+      radius: radius,
+      color: color,
+      velocity: velocity,
+    });
+    enemy.pivot.set(0.5, 0.5);
+    enemy.position.set(x, y);
 
-      enemies.push(enemy);
-    }, 1000);
+    enemies.push(enemy);
+    // }, 1000);
   }
 
   app.stage.on("pointerdown", (event) => {
@@ -78,18 +79,22 @@ import { Enemy } from "./components/enemy";
     projectiles.forEach((projectile) => {
       app.stage.addChild(projectile);
       projectile.update();
-      // if (projectile.position.x > app.canvas.height / 2) {
-      //   projectile.delete();
-      // }
     });
     enemies.forEach((item, itemIndex) => {
       app.stage.addChild(item);
       item.update();
+      console.log("item.x", item.x);
+
+      const distance = Math.hypot(player.x - item.x, player.y - item.y);
+
+      // end game
+      if (distance - item.radius - player.radius < 0) {
+        console.log("stop");
+        app.ticker.stop();
+      }
 
       projectiles.forEach((proj, projIndex) => {
         const distance = Math.hypot(proj.x - item.x, proj.y - item.y);
-        // console.log("item.x", item.x);
-        // console.log("proj.x", proj.x);
         console.log("distance", distance);
 
         if (distance - item.radius - proj.radius < 0) {

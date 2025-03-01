@@ -20,11 +20,7 @@ class Player extends Graphics {
   }
 
   draw() {
-    this.circle(
-      this.app.canvas.width / 2,
-      this.app.canvas.height / 2,
-      this.radius
-    ).fill({
+    this.circle(0, 0, this.radius).fill({
       color: this.color,
       alpha: 1,
     });
